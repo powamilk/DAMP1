@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAMP6.DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,5 +20,6 @@ namespace DAL.BUS.ViewModel
         public string? Diachi { get; set; }
 
         public int? IdPh { get; set; }
+        public PhuHuynhVM PhuHuynh { get; set; }
     }
 }

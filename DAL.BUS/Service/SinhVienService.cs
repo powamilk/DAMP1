@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DAL.BUS.Utils.Mapper;
 using DAL.BUS.ViewModel;
 using DAMP6.DAL;
 using DAMP6.DAL.Entities;
@@ -15,16 +16,16 @@ namespace DAL.BUS.Service
     {
         private readonly ISinhVienRepo _repo;
         private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
 
         public SinhVienService()
         {
             _repo = new SinhVienRepo();
             _context = new AppDbContext();
         }
-        public string Create(SinhVienCreateVM vm)
+
+        public string Create(SinhVienCreateVM createVM)
         {
-            Sinhvien entity = _mapper.Map<Sinhvien>(vm); 
+            Sinhvien entity = SinhVienMapping.MapCreateVMToEntity(createVM);
             var result = _repo.Create(entity);
             return result;
         }
@@ -37,16 +38,46 @@ namespace DAL.BUS.Service
 
         public List<SinhVienVM> GetAll()
         {
-            List<Sinhvien> entities = _repo.GetList();  
-            var vms = _mapper.Map<List<SinhVienVM>>(entities);
-            return vms;
+            var sinhViens = _repo.GetList();
+            var sinhVienVMs = sinhViens.Select(sv => new SinhVienVM
+            {
+                Id = sv.Id,
+                Ten = sv.Ten,
+                Email = sv.Email,
+                Sdt = sv.Sdt,
+                Diachi = sv.Diachi,
+                IdPh = sv.IdPh,
+                PhuHuynh = sv.IdPhNavigation != null
+                            ? new PhuHuynhVM
+                            {
+                                Id = sv.IdPhNavigation.Id,
+                                Ten = sv.IdPhNavigation.Ten,
+                                Nghenghiep = sv.IdPhNavigation.Nghenghiep
+                            }
+                            : null
+            }).ToList();
+
+            return sinhVienVMs;
         }
 
-        public bool Update(SinhVienUpdateVM vm)
+        public bool Update(SinhVienUpdateVM updateVM)
         {
-            Sinhvien entity = _mapper.Map<Sinhvien>(vm);
+            Sinhvien entity = SinhVienMapping.MapUpdateVMToEntity(updateVM);
             var result = _repo.Update(entity);
             return result;
+        }
+
+        public List<PhuHuynhVM> GetAllPhuHuynh()
+        {
+            var phuHuynhs = _context.Phuhuynhs.ToList();
+            var phuHuynhVMs = phuHuynhs.Select(ph => new PhuHuynhVM
+            {
+                Id = ph.Id,
+                Ten = ph.Ten,
+                Nghenghiep = ph.Nghenghiep
+            }).ToList();
+
+            return phuHuynhVMs;
         }
     }
 }

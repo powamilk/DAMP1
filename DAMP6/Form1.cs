@@ -7,144 +7,179 @@ namespace DAMP6
 {
     public partial class Form1 : Form
     {
-        List<SinhVienVM> _svs;
+        List<SinhVienVM> _sinhViens;
         ISinhVienService _sinhVienService;
+        private int? selectedPhuHuynhId;
+        private int selectedSinhVienId;
 
         public Form1()
         {
-            _svs = new List<SinhVienVM>();
             _sinhVienService = new SinhVienService();
             InitializeComponent();
+            LoadPhuHuynhToComboBox();
+            LoadPhuHuynhToTimKiemComboBox();
             LoadFormDataSinhVien();
-            LoadGridDataSinhVien();
+        }
+
+        private void LoadPhuHuynhToComboBox()
+        {
+            var phuHuynhs = _sinhVienService.GetAllPhuHuynh();
+            cb_phuhuynh.DataSource = phuHuynhs;
+            cb_phuhuynh.DisplayMember = "Ten";
+            cb_phuhuynh.ValueMember = "Id";
+        }
+
+        private void LoadPhuHuynhToTimKiemComboBox()
+        {
+            var phuHuynhs = _sinhVienService.GetAllPhuHuynh();
+            cb_timkiem.DataSource = phuHuynhs;
+            cb_timkiem.DisplayMember = "Ten";
+            cb_timkiem.ValueMember = "Id";
         }
 
 
         private void LoadFormDataSinhVien()
         {
             dgv_sinhvien.Columns.Clear();
-            dgv_sinhvien.Columns.Add("CLM1", "STT");
-            dgv_sinhvien.Columns.Add("CLM2", "Tên");
-            dgv_sinhvien.Columns.Add("CLM3", "Email");
-            dgv_sinhvien.Columns.Add("CLM4", "SĐT");
-            dgv_sinhvien.Columns.Add("CLM5", "Địa chỉ");
-
-            cb_ph.Items.Clear();
-            cb_ph.Items.Add("1");
-            cb_ph.Items.Add("2");
-            cb_ph.Items.Add("3");
-            cb_ph.Items.Add("4");
-            cb_ph.Items.Add("5");
+            dgv_sinhvien.Columns.Add("clm_stt", "STT");
+            dgv_sinhvien.Columns.Add("clm_ten", "Tên Sinh Viên");
+            dgv_sinhvien.Columns.Add("clm_email", "Email");
+            dgv_sinhvien.Columns.Add("clm_sdt", "Số điện thoại");
+            dgv_sinhvien.Columns.Add("clm_diachi", "Địa chỉ");
+            dgv_sinhvien.Columns.Add("clm_phuhuynh", "Phụ huynh");
         }
 
         private void LoadGridDataSinhVien()
         {
-            _svs = _sinhVienService.GetAll();
+            _sinhViens = _sinhVienService.GetAll();
             dgv_sinhvien.Rows.Clear();
-            foreach (var sv in _svs)
+
+            int stt = 1;
+            foreach (var sv in _sinhViens)
             {
                 dgv_sinhvien.Rows.Add(
-                    (_svs.IndexOf(sv) + 1),
+                    stt++,
                     sv.Ten,
                     sv.Email,
                     sv.Sdt,
                     sv.Diachi,
-                    sv.IdPh
-                    );
+                    sv.PhuHuynh != null ? sv.PhuHuynh.Ten : "null"
+                );
             }
         }
 
         private void btn_them_Click(object sender, EventArgs e)
         {
-            int id;
-            if (int.TryParse(txt_id.Text, out id))
+            var selectedPhId = cb_phuhuynh.SelectedValue;
+            if (selectedPhId != null)
             {
-                int? idPh = cb_ph.SelectedItem != null ? (int?)cb_ph.SelectedValue : null;
-                var newSinhVien = new SinhVienCreateVM
+                var sinhVienVM = new SinhVienCreateVM
                 {
-                    Id = id,
                     Ten = txt_ten.Text,
                     Email = txt_email.Text,
                     Sdt = txt_sdt.Text,
                     Diachi = txt_diachi.Text,
-                    IdPh = idPh
+                    IdPh = int.Parse(cb_phuhuynh.SelectedValue.ToString())
                 };
-                string result = _sinhVienService.Create(newSinhVien);
-
-                if (!string.IsNullOrEmpty(result))
-                {
-                    MessageBox.Show("Thêm sinh viên thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Thêm sinh viên thất bại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                var result = _sinhVienService.Create(sinhVienVM);
+                MessageBox.Show(result, "Thông báo");
+                LoadGridDataSinhVien();
             }
             else
             {
-                MessageBox.Show("Vui lòng nhập một ID hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn phụ huynh.");
             }
         }
 
         private void btn_sua_Click(object sender, EventArgs e)
         {
-            int id;
-            if (int.TryParse(txt_id.Text, out id))
+            var sinhVienVM = new SinhVienUpdateVM
             {
-                int? idPh = cb_ph.SelectedItem != null ? (int?)cb_ph.SelectedValue : null;
-                var updateSinhVien = new SinhVienUpdateVM
-                {
-                    Id = id,
-                    Ten = txt_ten.Text,        
-                    Email = txt_email.Text,   
-                    Sdt = txt_sdt.Text,        
-                    Diachi = txt_diachi.Text, 
-                    IdPh = idPh                
-                };
-                bool success = _sinhVienService.Update(updateSinhVien);
+                Id = selectedSinhVienId,
+                Ten = txt_ten.Text,
+                Email = txt_email.Text,
+                Sdt = txt_sdt.Text,
+                Diachi = txt_diachi.Text,
+                IdPh = int.Parse(cb_phuhuynh.SelectedValue.ToString())
+            };
 
-                if (success)
-                {
-                    MessageBox.Show("Cập nhật sinh viên thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Cập nhật sinh viên thất bại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Vui lòng nhập một ID hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            var result = _sinhVienService.Update(sinhVienVM);
+            MessageBox.Show(result ? "Sửa thành công" : "Sửa thất bại", "Thông báo");
+            LoadGridDataSinhVien();
         }
 
         private void btn_xoa_Click(object sender, EventArgs e)
         {
-            int id;
-            if (int.TryParse(txt_id.Text, out id))
+            if (selectedSinhVienId != 0)
             {
-                DialogResult result = MessageBox.Show("Bạn có chắc chắn muốn xóa sinh viên này không?",
-                                                      "Xác nhận xóa",
-                                                      MessageBoxButtons.YesNo,
-                                                      MessageBoxIcon.Warning);
-
-                if (result == DialogResult.Yes)
+                var confirmResult = MessageBox.Show("Bạn có chắc chắn muốn xóa sinh viên này?", "Xác nhận", MessageBoxButtons.YesNo);
+                if (confirmResult == DialogResult.Yes)
                 {
-                    bool success = _sinhVienService.Delete(id);
-
-                    if (success)
-                    {
-                        MessageBox.Show("Xóa sinh viên thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Xóa sinh viên thất bại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    var result = _sinhVienService.Delete(selectedSinhVienId);
+                    MessageBox.Show(result ? "Xóa thành công" : "Xóa thất bại", "Thông báo");
+                    LoadGridDataSinhVien();
                 }
             }
             else
             {
-                MessageBox.Show("Vui lòng nhập một ID hợp lệ!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Bạn chưa chọn sinh viên.");
+            }
+        }
+
+        private void btn_show_Click(object sender, EventArgs e)
+        {
+            LoadGridDataSinhVien();
+        }
+
+        private void dgv_sinhvien_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0 || e.RowIndex >= dgv_sinhvien.Rows.Count)
+                {
+                    return;
+                }
+                int stt = int.Parse(dgv_sinhvien.Rows[e.RowIndex].Cells["clm_stt"].Value.ToString());
+                var selectedSinhVien = _sinhViens[stt - 1];
+                selectedSinhVienId = selectedSinhVien.Id;
+                txt_ten.Text = selectedSinhVien.Ten;
+                txt_email.Text = selectedSinhVien.Email;
+                txt_sdt.Text = selectedSinhVien.Sdt;
+                txt_diachi.Text = selectedSinhVien.Diachi;
+                selectedPhuHuynhId = selectedSinhVien.IdPh;
+                cb_phuhuynh.SelectedValue = selectedPhuHuynhId;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Có lỗi xảy ra: {ex.Message}");
+            }
+        }
+
+        private void btn_timkiem_Click(object sender, EventArgs e)
+        {
+            string keyword = txt_timkiem.Text.ToLower();
+            var filterType = cb_timkiem.SelectedItem.ToString();
+
+            var filteredList = _sinhViens.Where(sv =>
+            {
+                if (filterType == "Tên")
+                    return sv.Ten.ToLower().Contains(keyword);
+                else
+                    return sv.Email.ToLower().Contains(keyword);
+            }).ToList();
+
+            dgv_sinhvien.Rows.Clear();
+            int stt = 1;
+            foreach (var sv in filteredList)
+            {
+                dgv_sinhvien.Rows.Add(
+                    stt++,
+                    sv.Ten,
+                    sv.Email,
+                    sv.Sdt,
+                    sv.Diachi,
+                    sv.PhuHuynh != null ? sv.PhuHuynh.Ten : "null"
+                );
             }
         }
     }

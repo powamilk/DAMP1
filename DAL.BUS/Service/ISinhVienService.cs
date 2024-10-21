@@ -12,6 +12,7 @@ namespace DAL.BUS.Service
         List<SinhVienVM> GetAll();
         string Create(SinhVienCreateVM vm);
         bool Update(SinhVienUpdateVM vm);
-        bool Delete(int id);    
+        bool Delete(int id);
+        public List<PhuHuynhVM> GetAllPhuHuynh();
     }
 }

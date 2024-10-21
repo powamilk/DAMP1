@@ -38,12 +38,16 @@
             txt_email = new TextBox();
             txt_diachi = new TextBox();
             txt_sdt = new TextBox();
-            cb_ph = new ComboBox();
+            cb_phuhuynh = new ComboBox();
             btn_them = new Button();
             btn_xoa = new Button();
             btn_sua = new Button();
             txt_id = new TextBox();
             label6 = new Label();
+            btn_show = new Button();
+            txt_timkiem = new TextBox();
+            btn_timkiem = new Button();
+            cb_timkiem = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)dgv_sinhvien).BeginInit();
             SuspendLayout();
             // 
@@ -54,6 +58,7 @@
             dgv_sinhvien.Name = "dgv_sinhvien";
             dgv_sinhvien.Size = new Size(786, 203);
             dgv_sinhvien.TabIndex = 0;
+            dgv_sinhvien.CellClick += dgv_sinhvien_CellClick;
             // 
             // label1
             // 
@@ -129,13 +134,13 @@
             txt_sdt.Size = new Size(256, 23);
             txt_sdt.TabIndex = 9;
             // 
-            // cb_ph
+            // cb_phuhuynh
             // 
-            cb_ph.FormattingEnabled = true;
-            cb_ph.Location = new Point(93, 190);
-            cb_ph.Name = "cb_ph";
-            cb_ph.Size = new Size(254, 23);
-            cb_ph.TabIndex = 10;
+            cb_phuhuynh.FormattingEnabled = true;
+            cb_phuhuynh.Location = new Point(93, 190);
+            cb_phuhuynh.Name = "cb_phuhuynh";
+            cb_phuhuynh.Size = new Size(254, 23);
+            cb_phuhuynh.TabIndex = 10;
             // 
             // btn_them
             // 
@@ -183,17 +188,56 @@
             label6.TabIndex = 15;
             label6.Text = "ID";
             // 
+            // btn_show
+            // 
+            btn_show.Location = new Point(733, 203);
+            btn_show.Name = "btn_show";
+            btn_show.Size = new Size(55, 26);
+            btn_show.TabIndex = 16;
+            btn_show.Text = "Show";
+            btn_show.UseVisualStyleBackColor = true;
+            btn_show.Click += btn_show_Click;
+            // 
+            // txt_timkiem
+            // 
+            txt_timkiem.Location = new Point(414, 203);
+            txt_timkiem.Name = "txt_timkiem";
+            txt_timkiem.Size = new Size(125, 23);
+            txt_timkiem.TabIndex = 17;
+            // 
+            // btn_timkiem
+            // 
+            btn_timkiem.Location = new Point(625, 203);
+            btn_timkiem.Name = "btn_timkiem";
+            btn_timkiem.Size = new Size(55, 26);
+            btn_timkiem.TabIndex = 18;
+            btn_timkiem.Text = "Show";
+            btn_timkiem.UseVisualStyleBackColor = true;
+            btn_timkiem.Click += btn_timkiem_Click;
+            // 
+            // cb_timkiem
+            // 
+            cb_timkiem.FormattingEnabled = true;
+            cb_timkiem.Location = new Point(545, 206);
+            cb_timkiem.Name = "cb_timkiem";
+            cb_timkiem.Size = new Size(74, 23);
+            cb_timkiem.TabIndex = 19;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(cb_timkiem);
+            Controls.Add(btn_timkiem);
+            Controls.Add(txt_timkiem);
+            Controls.Add(btn_show);
             Controls.Add(label6);
             Controls.Add(txt_id);
             Controls.Add(btn_sua);
             Controls.Add(btn_xoa);
             Controls.Add(btn_them);
-            Controls.Add(cb_ph);
+            Controls.Add(cb_phuhuynh);
             Controls.Add(txt_sdt);
             Controls.Add(txt_diachi);
             Controls.Add(txt_email);
@@ -223,11 +267,15 @@
         private TextBox txt_email;
         private TextBox txt_diachi;
         private TextBox txt_sdt;
-        private ComboBox cb_ph;
+        private ComboBox cb_phuhuynh;
         private Button btn_them;
         private Button btn_xoa;
         private Button btn_sua;
         private TextBox txt_id;
         private Label label6;
+        private Button btn_show;
+        private TextBox txt_timkiem;
+        private Button btn_timkiem;
+        private ComboBox cb_timkiem;
     }
 }
